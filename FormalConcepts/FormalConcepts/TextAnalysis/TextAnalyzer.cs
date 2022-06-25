@@ -1,6 +1,9 @@
 ﻿using FormalConcepts.TextAnalysis.Stemmers;
 using Iso639;
 using Snowball;
+using StopWord;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace FormalConcepts.TextAnalysis
 {
@@ -82,5 +85,73 @@ namespace FormalConcepts.TextAnalysis
 
             }
         }
+
+        public string Stem(string word)
+        {
+            return Stemmer.Stem(word);
+        }
+
+        public List<String> GetSentences(string text)
+        {
+            char[] delimiters = new char[] { '.' };
+            List<string> sentences = text.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).ToList();
+            return sentences;
+        }
+
+        public List<string> Tokenizer(string sentence)
+        {
+            List<string> keywords = new List<string>();
+            char[] splitChars =
+                new char[] { ',', ' ', '\r', '\n', '\t', '©', '-', '<', '>', '/', '\\', '.', '(', ')', '?', '@', '^', '#', '%', '&', '*', '$', '!', ';', ':', '\"', '{', '}', '~', '\'', '[', ']', '“' };
+
+            string[] tokens = TryRemoveStopWords(sentence).Split(splitChars);
+            foreach (String word in tokens)
+            {
+                if (word.Length > 1)
+                {
+                    String root = Stemmer.Stem(word);
+                    if (!String.IsNullOrEmpty(TryRemoveStopWords(root)))
+                        keywords.Add(word); //Should we add word or root?
+                }
+            }
+            return keywords;
+        }
+
+        public List<string> ExtractWords(string sentence)
+        {
+            char[] splitChars =
+                new char[] { ',', ' ', '\r', '\n', '\t', '©', '-', '<', '>', '/', '\\', '.', '(', ')', '?', '@', '^', '#', '%', '&', '*', '$', '!', ';', ':', '\"', '{', '}', '~', '\'', '[', ']', '“' };
+
+            string[] words = TryRemoveStopWords(sentence).Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
+
+            return words.ToList();
+        }
+
+        public string RemoveDiacritics(string InputStr)
+        {
+            string BasicStr = InputStr.Normalize(NormalizationForm.FormD);
+            string TempStr = "";
+            for (int i = 0; i < BasicStr.Length; i++)
+            {
+                if (char.GetUnicodeCategory(BasicStr[i]) != System.Globalization.UnicodeCategory.NonSpacingMark)
+                    TempStr += BasicStr[i];
+            }
+            return TempStr;
+        }
+
+        public string TryRemoveStopWords(string text)
+        {
+            try
+            {
+                return text.RemoveStopWords(Language.Part1);
+            }
+            catch (ArgumentException ex) //The Language is not supported exception
+            {
+                return text;
+            }
+        }
+
+        
+
     }
 }
