@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace FormalConcepts.Algorithm.Entities
 {
+    [DebuggerDisplay("{RootWord} - {Keyword} - {RootWordFrequency}")]
     internal class KeywordNode
     {
         public int KeywordIndex { get; set; }

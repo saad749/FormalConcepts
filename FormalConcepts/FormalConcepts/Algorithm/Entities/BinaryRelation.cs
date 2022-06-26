@@ -17,6 +17,7 @@ namespace FormalConcepts.Algorithm.Entities
         {
             Sentences = new HashSet<SentenceNode>();
             Keywords = new HashSet<KeywordNode>();
+            OptimalConcepts = new HashSet<OptimalConcept>();
             CreateBinaryRelation(text, language_iso639_3);
         }
 
